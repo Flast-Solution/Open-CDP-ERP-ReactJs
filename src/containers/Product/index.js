@@ -33,10 +33,8 @@ const log = (value) => console.log('[container.product.index] ', value);
 const Product = ({ closeModal, data }) => {
 
   const [ record, setRecord ] = useState({});
-  const [ fileActive, setFileActive ] = useState('');
-  const [ sessionId, setSessionId ] = useState(null);
-
   useEffect(() => {
+    log({ action: 'props', data });
     (async () => {
       let dRe = {}, skus = []
       if (arrayNotEmpty(data?.listProperties || [])) {
@@ -50,49 +48,37 @@ const Product = ({ closeModal, data }) => {
         dRe.attrs = itemAttrs;
         dRe.attrValues = itemAttrValues;
       }
-      if (data?.skus) {
-        for (const iSkus of data?.skus) {
-          let item = { id: iSkus?.id, name: iSkus?.name, listPriceRange: iSkus?.listPriceRange }
-          let details = [];
-          for (const detail of iSkus?.sku) {
-            details.push([detail.attributedId, detail.attributedValueId]);
-          }
-          item.sku = details;
-          skus.push(item);
+      for (const iSkus of ( data?.skus || [] )) {
+        let item = { id: iSkus?.id, name: iSkus?.name, skuPrices: iSkus?.skuPrices || [] }
+        let details = [];
+        for (const detail of iSkus?.sku) {
+          details.push([detail.attributedId, detail.attributedValueId]);
         }
+        item.sku = details;
+        skus.push(item);
       }
-      const newData = {
-        ...data,
-        skus: skus
-      }
-      const newItem = data ? newData : data;
-      setRecord({ ...newItem, dRe });
+      setRecord({ ...data, skus, dRe });
     })();
     return () => ProductAttrService.empty();
-  }, [data]);
+  }, [ data ]);
 
   const onSubmit = useCallback(async (datas) => {
-    log(datas);
+    log({ action: 'onSubmit', datas });
     let values = cloneDeep(datas);
     let skusAdd = [];
     for (let arrsku of values.skus) {
-      const newSkus = data?.skus?.find(f => f?.id === arrsku?.id);
-      let newSku = newSkus?.sku ? [...newSkus.sku] : [];
+      /* oldSku = [ {id: 10384, attributedId: 10023, attributedValueId: 10085}, ... ] */
+      const oldSku = data?.skus?.find(f => f?.id === arrsku?.id)?.sku ?? [];
+      let newSku = [];
       for (let sku of arrsku.sku) {
-        let exists = newSku.some(
-          (item) => item.attributedId === sku[0] && item.attributedValueId === sku[1]
+        const [ attrId, attrValueId ] = sku;
+        let existSku = oldSku.find(
+          (item) => item.attributedId === attrId && item.attributedValueId === attrValueId
         );
-        if (!exists) {
-          newSku.push({
-            id: null,
-            attributedId: sku[0],
-            attributedValueId: sku[1]
-          });
-        }
+        newSku.push({ id: existSku?.id || null, attributedId: attrId, attributedValueId: attrValueId });
       }
-      arrsku.id = arrsku.id || null;
       arrsku.sku = newSku;
-      skusAdd.push(arrsku)
+      skusAdd.push(arrsku);
     }
 
     const newListProperties = values?.listProperties.map(item => ({
@@ -100,26 +86,24 @@ const Product = ({ closeModal, data }) => {
       propertyValueId: item?.attributedValueId,
     })) || [];
 
-    const newItem = {
+    const body = {
       ...values,
       listProperties: newListProperties,
-      sessionId: !sessionId ? 0 : sessionId,
       skus: skusAdd
     }
 
-    const newValue = { ...newItem, image: fileActive || data?.image }
     let params = (values?.id ?? '') === '' ? {} : { id: values.id };
     if (arrayEmpty(values.skus)) {
       message.info("Can't create Product with empty skus .!");
       return;
     }
-    const { errorCode } = await RequestUtils.Post("/product/save", newValue, params);
+    const { errorCode } = await RequestUtils.Post("/product/save", body, params);
     const isSuccess = errorCode === 200;
     if (isSuccess) {
       f5List('product/fetch');
     }
     InAppEvent.normalInfo(isSuccess ? "Cập nhật thành công" : "Lỗi cập nhật, vui lòng thử lại sau");
-  }, [data, fileActive, sessionId]);
+  }, [ data ]);
 
   return (
     <RestEditModal
@@ -129,12 +113,7 @@ const Product = ({ closeModal, data }) => {
       record={record}
       closeModal={closeModal}
     >
-      <ProductForm
-        data={data}
-        fileActive={fileActive}
-        setFileActive={setFileActive}
-        setSessionId={setSessionId}
-      />
+      <ProductForm />
     </RestEditModal>
   )
 }
