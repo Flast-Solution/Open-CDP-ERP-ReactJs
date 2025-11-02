@@ -229,7 +229,7 @@ const CustomerProfile = () => {
               </Text>
             </div>
           </Card>
-          <CareNoteList />
+          <CareNoteList customerId={id} />
           <Card title="Sản phẩm & Dịch vụ" style={{ marginBottom: 16 }}>
             <Table
               scroll={{ x: 'max-content' }}
