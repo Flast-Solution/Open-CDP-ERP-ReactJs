@@ -155,7 +155,7 @@ const BanHangPage = ({
       order.mSkuDetails = mSkuDetails;
       order.skuDetailCode = String(skuId);
       order.quantity = quantity;
-      order.warehouseOptions = getWarehouseByProduct(mSkuDetails, mProduct);
+      order.warehouseOptions = getWarehouseByProduct(skuId, mProduct);
 
       const skus = mProduct?.skus ?? [];
       let skuPrices = [];
@@ -293,10 +293,7 @@ const BanHangPage = ({
   const totalSubOrder = data.reduce((sum, item) => sum + item.totalPrice - item.discountAmount, 0);
 
   const editRow = (key) => {
-    const newData = data.map(item => ({
-      ...item,
-      editable: item.key === key,
-    }));
+    const newData = data.map(item => ({ ...item, editable: item.key === key }));
     setData(newData);
   };
 

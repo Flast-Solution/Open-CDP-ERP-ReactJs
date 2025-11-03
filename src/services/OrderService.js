@@ -23,20 +23,13 @@ import { SUCCESS_CODE } from "configs";
 import { arrayEmpty } from "utils/dataUtils";
 import RequestUtils from "utils/RequestUtils";
 
-export const getWarehouseByProduct = (mSkuDetails, mProduct) => {
+export const getWarehouseByProduct = (skuId, mProduct) => {
   if (arrayEmpty(mProduct?.warehouses)) {
     return []
   }
   let warehouseOptions = [];
   for (let warehouse of mProduct.warehouses) {
-    let skuInfo;
-    if (typeof warehouse.skuInfo === "string") {
-      skuInfo = warehouse.skuInfo;
-    } else {
-      skuInfo = JSON.stringify(warehouse.skuInfo || {});
-    }
-    const skuChoise = JSON.stringify(mSkuDetails);
-    if (skuInfo === skuChoise) {
+    if (skuId === warehouse.skuId) {
       warehouseOptions.push(warehouse);
     }
   }
@@ -102,7 +95,7 @@ const OrderService = {
     }
     for (let detail of details) {
       let mProduct = (products.embedded ?? []).find(item => item.id === detail.productId);
-      detail.warehouseOptions = getWarehouseByProduct(detail.mSkuDetails, mProduct);
+      detail.warehouseOptions = getWarehouseByProduct(detail.skuId, mProduct);
       if (arrayEmpty(detail.warehouseOptions)) {
         continue;
       }
