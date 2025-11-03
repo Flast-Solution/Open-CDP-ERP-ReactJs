@@ -29,7 +29,24 @@ import ProductForm from './ProductForm';
 import ProductAttrService from 'services/ProductAttrService';
 import { cloneDeep } from 'lodash';
 
+/**
+ * @param [ {id: 10384, attributedId: 10023, attributedValueId: 10085}, ... ] oldSku
+ * @param [ [10023, 10085], ... ] newSku
+ * @returns [ {id: 10384, attributedId: 10023, attributedValueId: 10085}, ... ]
+*/
+const GenerateSkuDetailsOnSubmit = (oldSku, newSku) => {
+  let details = [];
+  for (let sku of newSku) {
+    const [ attributedId, attributedValueId ] = sku;
+    let existSku = oldSku.find(
+      (item) => item.attributedId === attributedId && item.attributedValueId === attributedValueId
+    );
+    details.push({ ...(existSku?.id ? { id: existSku.id } : {}), attributedId, attributedValueId });
+  }
+  return details;
+}
 const log = (value) => console.log('[container.product.index] ', value);
+
 const Product = ({ closeModal, data }) => {
 
   const [ record, setRecord ] = useState({});
@@ -69,14 +86,7 @@ const Product = ({ closeModal, data }) => {
     for (let arrsku of values.skus) {
       /* oldSku = [ {id: 10384, attributedId: 10023, attributedValueId: 10085}, ... ] */
       const oldSku = data?.skus?.find(f => f?.id === arrsku?.id)?.sku ?? [];
-      let newSku = [];
-      for (let sku of arrsku.sku) {
-        const [ attrId, attrValueId ] = sku;
-        let existSku = oldSku.find(
-          (item) => item.attributedId === attrId && item.attributedValueId === attrValueId
-        );
-        newSku.push({ id: existSku?.id || null, attributedId: attrId, attributedValueId: attrValueId });
-      }
+      let newSku = GenerateSkuDetailsOnSubmit(oldSku, arrsku.sku);
       arrsku.sku = newSku;
       skusAdd.push(arrsku);
     }
