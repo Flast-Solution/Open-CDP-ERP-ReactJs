@@ -42,6 +42,7 @@ const OrderService = {
   getListOrderName() {
     return [
       { name: "Bán lẻ", color: "rgb(0, 176, 216)" },
+      { name: "Dịch vụ", color: "rgb(55, 95, 206)" },
       { name: "Sản xuất", color: "rgb(242, 111, 33)" }
     ]
   },
