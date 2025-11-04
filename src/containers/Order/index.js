@@ -142,7 +142,6 @@ const BanHangPage = ({
 
   const onAddProduct = useCallback((lead = null) => {
     const onAfterChoiseProduct = (values) => {
-      console.log('App Product', values);
       let order = _.cloneDeep(ORDER_TEMPLATE);
       const { mSkuDetails, mProduct, quantity, productId, skuId } = values;
       /* Tạo Item trong list sản phẩm */
@@ -166,7 +165,6 @@ const BanHangPage = ({
         skuPrices = skus.find(s => s.id === warehouse?.skuId)?.skuPrices ?? [];
       }
 
-      console.log('skuPrices', skuPrices);
       const dataPrice = findByQuantity(skuPrices, order.quantity);
       if (dataPrice?.priceRef) {
         order.price = dataPrice.priceRef;
