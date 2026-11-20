@@ -35,14 +35,17 @@ import MyPopup from 'routes/PopupRoute';
 import Loading from 'components/Loading';
 import ModalRoutes from 'routes/ModalRoutes';
 import TableScrollbars from 'components/TableScrollbars';
+import { TenantRouteProvider } from 'features/TenantRoutes/Provider';
 
 const ThemeRender = () => (
   <ThemeProvider theme={theme}>
     <TableScrollbars />
     <Auth>
-      <Authorization>
-        <MainLayout />
-      </Authorization>
+      <TenantRouteProvider>
+        <Authorization>
+          <MainLayout />
+        </Authorization>
+      </TenantRouteProvider>
     </Auth>
     <Suspense fallback={<Loading />}>
       <ModalRoutes />
