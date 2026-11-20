@@ -92,4 +92,4 @@ Flast-Solution luôn tích cực tham gia đóng góp cho sự nghiệp phát tr
 Hướng tới đóng góp tích cực vào quá trình chuyển đối số của doanh nghiệp theo "Phương Châm" Nhanh - Hiệu quả - Tiết Kiệm.
 
 ## Đội ngũ phát triển ##
-HuuNV, TrungThanh, QuangDuc, Minh3N
+HuuNV, TrungThanh, QuangDuc, Minh3N, duongtmfs
