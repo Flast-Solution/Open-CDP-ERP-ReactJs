@@ -34,9 +34,11 @@ import MainLayout from 'layouts/MainLayout';
 import MyPopup from 'routes/PopupRoute';
 import Loading from 'components/Loading';
 import ModalRoutes from 'routes/ModalRoutes';
+import TableScrollbars from 'components/TableScrollbars';
 
 const ThemeRender = () => (
   <ThemeProvider theme={theme}>
+    <TableScrollbars />
     <Auth>
       <Authorization>
         <MainLayout />

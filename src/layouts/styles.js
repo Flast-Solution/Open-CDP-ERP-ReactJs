@@ -89,7 +89,8 @@ const PrivateLayoutWrapper = styled.div`
   }
 
   .header {
-    z-index: 1;
+    position: relative;
+    z-index: 10;
     background: ${({ theme }) => theme.background.content};
     padding: 0 24px;
     display: flex;
